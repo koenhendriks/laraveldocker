@@ -36,7 +36,13 @@ RUN curl --silent --show-error https://getcomposer.org/installer | php && \
 # RUN composer --version && php -v
 
 # Install Nginx
-RUN apt-get install -y nginx && service nginx stop
+RUN apt-get install -y nginx
+
+# Install MySQL
+RUN apt-get install mysql-server -y && \
+	service mysql start && \
+	mysql -u root -e \
+		"CREATE USER 'homestead'@'localhost' IDENTIFIED BY 'secret';GRANT ALL PRIVILEGES ON *.* TO 'homestead'@'localhost' WITH GRANT OPTION;create database homestead;"
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
