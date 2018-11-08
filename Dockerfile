@@ -37,21 +37,20 @@ RUN apt-get install -y \
 RUN curl --silent --show-error https://getcomposer.org/installer | php && \
 	mv composer.phar /usr/local/bin/composer
 
-# RUN composer --version && php -v
-
 # Install Nginx and turn off daemon
 RUN apt-get install -y nginx && \
 	sed -i '1idaemon off;' /etc/nginx/nginx.conf
 
-# Install MySQL
+# Install MySQL, update bind-address and create user with database
 RUN apt-get install mysql-server -y && \
+	sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf && \
 	service mysql start && \
 	mysql -u root -e \
-		"CREATE USER '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';GRANT ALL PRIVILEGES ON *.* TO '${MYSQL_USER}'@'localhost' WITH GRANT OPTION;create database ${MYSQL_DATABASE};"
+		"CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';GRANT ALL PRIVILEGES ON *.* TO '${MYSQL_USER}'@'%' WITH GRANT OPTION;create database ${MYSQL_DATABASE};"
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
-EXPOSE 80 443
+EXPOSE 80 443 3306
 
