@@ -1,9 +1,13 @@
 # Use an official Python runtime as a parent image
 FROM ubuntu:18.04
 
-ENV TIMEZONE "Europe/Amsterdam"
+ENV TIMEZONE="Europe/Amsterdam"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN=true
+
+ENV MYSQL_USER=homestead
+ENV MYSQL_PASSWORD=secret
+ENV MYSQL_DATABASE=homestead
 
 MAINTAINER Koen Hendriks <info@koenhendriks.com>
 
@@ -35,14 +39,15 @@ RUN curl --silent --show-error https://getcomposer.org/installer | php && \
 
 # RUN composer --version && php -v
 
-# Install Nginx
-RUN apt-get install -y nginx
+# Install Nginx and turn off daemon
+RUN apt-get install -y nginx && \
+	sed -i '1idaemon off;' /etc/nginx/nginx.conf
 
 # Install MySQL
 RUN apt-get install mysql-server -y && \
 	service mysql start && \
 	mysql -u root -e \
-		"CREATE USER 'homestead'@'localhost' IDENTIFIED BY 'secret';GRANT ALL PRIVILEGES ON *.* TO 'homestead'@'localhost' WITH GRANT OPTION;create database homestead;"
+		"CREATE USER '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';GRANT ALL PRIVILEGES ON *.* TO '${MYSQL_USER}'@'localhost' WITH GRANT OPTION;create database ${MYSQL_DATABASE};"
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
