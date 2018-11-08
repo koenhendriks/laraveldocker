@@ -25,6 +25,7 @@ RUN echo $TIMEZONE > /etc/timezone && \
 
 # Install PHP and Git
 RUN apt-get install -y \
+	php7.2-fpm \
 	php7.2-cli \
 	php7.2-common \
 	php7.2-mysql \
@@ -37,9 +38,13 @@ RUN apt-get install -y \
 RUN curl --silent --show-error https://getcomposer.org/installer | php && \
 	mv composer.phar /usr/local/bin/composer
 
-# Install Nginx and turn off daemon
+# Install Nginx, create app directory and turn off daemon
 RUN apt-get install -y nginx && \
-	sed -i '1idaemon off;' /etc/nginx/nginx.conf
+	sed -i '1idaemon off;' /etc/nginx/nginx.conf && \
+	mkdir /app
+
+# Install vhosts for laravel application
+RUN echo "server {\n	    listen 80;\n	   \n	    root /app/public;\n	    index index.php index.html index.htm;\n\n	    server_name laravel.test;\n\n	    location / {\n	        try_files $uri $uri/ /index.php?$query_string;\n	    }\n\n	    location ~ \.php$ {\n	        try_files \$uri /index.php =404;\n	        fastcgi_split_path_info ^(.+\.php)(/.+)$;\n	        fastcgi_pass unix:/var/run/php7.2-fpm.sock;\n	        fastcgi_index index.php;\n	        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;\n	        include fastcgi_params;\n	    }\n	}" > /etc/nginx/sites-enabled/laravel
 
 # Install MySQL, update bind-address and create user with database
 RUN apt-get install mysql-server -y && \
