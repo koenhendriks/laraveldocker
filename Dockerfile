@@ -32,7 +32,8 @@ RUN apt-get install -y \
 	php7.2-mbstring \
 	php7.2-json \
 	php7.2-xml \
-	git 
+	git  && \
+	mkdir /run/php
 
 # Install Composer
 RUN curl --silent --show-error https://getcomposer.org/installer | php && \
@@ -41,10 +42,12 @@ RUN curl --silent --show-error https://getcomposer.org/installer | php && \
 # Install Nginx, create app directory and turn off daemon
 RUN apt-get install -y nginx && \
 	sed -i '1idaemon off;' /etc/nginx/nginx.conf && \
-	mkdir /app
+	mkdir -p /app/public && \
+	echo "<?php phpinfo(); ?>" > /app/public/index.php
+
 
 # Install vhosts for laravel application
-RUN echo "server {\n	    listen 80;\n	   \n	    root /app/public;\n	    index index.php index.html index.htm;\n\n	    server_name laravel.test;\n\n	    location / {\n	        try_files $uri $uri/ /index.php?$query_string;\n	    }\n\n	    location ~ \.php$ {\n	        try_files \$uri /index.php =404;\n	        fastcgi_split_path_info ^(.+\.php)(/.+)$;\n	        fastcgi_pass unix:/var/run/php7.2-fpm.sock;\n	        fastcgi_index index.php;\n	        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;\n	        include fastcgi_params;\n	    }\n	}" > /etc/nginx/sites-enabled/laravel
+RUN echo "server {\n         listen 80;\n         listen [::]:80 ipv6only=on;\n \n         # Log files for Debugging\n         access_log /app/public/laravel-access.log;\n         error_log /app/public/laravel-error.log;\n \n         # Webroot Directory for Laravel project\n         root /app/public;\n         index index.php index.html index.htm;\n \n         server_name laravel.test;\n \n         location / {\n                 try_files \$uri \$uri/ /index.php?\$query_string;\n         }\n \n         # PHP-FPM Configuration Nginx\n         location ~ \.php\$ {\n                 try_files \$uri =404;\n                 fastcgi_split_path_info ^(.+\.php)(/.+)\$;\n                 fastcgi_pass unix:/run/php/php7.2-fpm.sock;\n                 fastcgi_index index.php;\n                 fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;\n                 include fastcgi_params;\n         }\n }" > /etc/nginx/sites-enabled/laravel
 
 # Install MySQL, update bind-address and create user with database
 RUN apt-get install mysql-server -y && \
