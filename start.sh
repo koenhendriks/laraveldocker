@@ -6,8 +6,8 @@ echo 'server {
          listen [::]:80 ipv6only=on;
 
          # Log files for Debugging
-         access_log /app/public/laravel-access.log;
-         error_log /app/public/laravel-error.log;
+         access_log /app/storage/logs/laravel-access-'${APP_NAME}'.log;
+         error_log /app/storage/logs/laravel-error-'${APP_NAME}'.log;
 
          # Webroot Directory for Laravel project
          root /app/public;
@@ -34,10 +34,5 @@ echo 'server {
 service mysql start;
 mysql -u root -e "CREATE USER '${DB_USERNAME}'@'%' IDENTIFIED BY '${DB_PASSWORD}';GRANT ALL PRIVILEGES ON *.* TO '${DB_USERNAME}'@'%' WITH GRANT OPTION;create database ${DB_DATABASE};";
 service mysql stop;
-
-composer install;
-php artisan key:generate;
-php artisan migrate;
-php artisan seed;
 
 supervisord -c /etc/supervisor/conf.d/supervisord.conf;

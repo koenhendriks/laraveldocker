@@ -49,8 +49,6 @@ RUN apt-get install mysql-server -y && \
 RUN apt-get install -y nginx && \
 	sed -i '1idaemon off;' /etc/nginx/nginx.conf
 
-COPY . /app/
-
 COPY ./start.sh /run/
 
 RUN chmod +x /run/start.sh
