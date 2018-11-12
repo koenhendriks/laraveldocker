@@ -33,6 +33,15 @@ echo 'server {
 # Create database with env variables
 service mysql start;
 mysql -u root -e "CREATE USER '${DB_USERNAME}'@'%' IDENTIFIED BY '${DB_PASSWORD}';GRANT ALL PRIVILEGES ON *.* TO '${DB_USERNAME}'@'%' WITH GRANT OPTION;create database ${DB_DATABASE};";
+
+cd /app;
+chmod -R 777 storage/
+chmod -R 775 bootstrap/cache/
+
+composer install;
+php artisan key:generate;
+php artisan migrate:fresh --seed --force;
 service mysql stop;
+
 
 supervisord -c /etc/supervisor/conf.d/supervisord.conf;
