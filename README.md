@@ -37,19 +37,19 @@ Make sure to add this to your `/etc/hosts`
 The LaravelDocker should work out of the box for most projects. If you want to change settings you can use the set environment variables.
 
 | ENV           				| Default       | Description  |
-| ----------------------------- |:-------------:| -----:|
+| ----------------------------- |:-------------:| ---------------------------------------------------------------------------------:|
 | TIMEZONE 						| UTC			| Sets the timezone in the container.												|
 | DB_DATABASE 					| homestead		| Database table that will be created.												|
 | DB_USERNAME 					| homestead		| Database user that will be created and granted all priviliges on the database.	|
 | DB_PASSWORD 					| secret		| Database password that will be set for the database user. 						|
-| APP_NAME 						| laravel 		| APP_NAME will be used for the Nginx host with `.test` domain.						|
+| APP_DOMAIN 					| laravel.test  | APP_DOMAIN will be used for the Nginx vhost.										|
 
 __Custom Configuration Example__ 
 
 ```Dockerfile
 FROM koenhendriks/laraveldocker
 
-ENV APP_NAME=my-app
+ENV APP_DOMAIN=application.test
 
 ENV TIMEZONE=Europe\/Amsterdam
 ENV DB_USERNAME=userdb
@@ -58,7 +58,7 @@ ENV DB_PASSWORD=p4ssw0rd
 
 ```
 
-By using this configuration the application will be available on `my-app.test` and MySQL will have a user `userdb` who can login with the password `p4ssw0rd` and it will have access to the database table `appdb`. 
+By using this configuration the application will be available on `application.test` and MySQL will have a user `userdb` who can login with the password `p4ssw0rd` and it will have access to the database table `appdb`. 
 
 
 ## Logs
