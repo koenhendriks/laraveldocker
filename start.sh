@@ -28,7 +28,7 @@ echo 'server {
                  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
                  include fastcgi_params;
          }
- }' > /etc/nginx/sites-enabled/laravel;
+ }' > /etc/nginx/sites-enabled/default;
 
 # Create database with env variables
 service mysql start;
