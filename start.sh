@@ -6,14 +6,14 @@ echo 'server {
          listen [::]:80 ipv6only=on;
 
          # Log files for Debugging
-         access_log /app/storage/logs/laravel-access-'${APP_NAME}'.log;
-         error_log /app/storage/logs/laravel-error-'${APP_NAME}'.log;
+         access_log /app/storage/logs/laravel-access-'${APP_DOMAIN}'.log;
+         error_log /app/storage/logs/laravel-error-'${APP_DOMAIN}'.log;
 
          # Webroot Directory for Laravel project
          root /app/public;
          index index.php index.html index.htm;
 
-         server_name '${APP_NAME}'.test;
+         server_name '${APP_DOMAIN}';
 
          location / {
                  try_files $uri $uri/ /index.php?$query_string;
@@ -37,6 +37,10 @@ mysql -u root -e "CREATE USER '${DB_USERNAME}'@'%' IDENTIFIED BY '${DB_PASSWORD}
 cd /app;
 chmod -R 777 storage/
 chmod -R 775 bootstrap/cache/
+
+if [ ! -f /app/.env ]; then
+    cp /app/.env.example /app/.env
+fi
 
 composer install;
 php artisan key:generate;

@@ -9,7 +9,7 @@ ENV DB_USERNAME=homestead
 ENV DB_PASSWORD=secret
 ENV DB_DATABASE=homestead
 
-ENV APP_NAME=laravel
+ENV APP_DOMAIN=laravel.test
 
 MAINTAINER Koen Hendriks <info@koenhendriks.com>
 
@@ -19,7 +19,9 @@ RUN apt-get update -y && apt-get upgrade -y
 # Install basic packages
 RUN apt-get install -y tzdata \
 	curl \
-	supervisor
+	supervisor \
+	zip \
+	unzip
 
 # Set the timezone
 RUN echo $TIMEZONE > /etc/timezone && \
