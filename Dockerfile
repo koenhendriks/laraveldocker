@@ -37,6 +37,7 @@ RUN apt-get install -y \
 	php7.2-json \
 	php7.2-xml \
 	php7.2-bcmath \
+	php7.2-curl \
 	git  && \
 	mkdir /run/php
 
