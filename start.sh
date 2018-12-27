@@ -45,6 +45,8 @@ fi
 composer install;
 php artisan key:generate;
 php artisan migrate:fresh --seed --force;
+yarn install;
+yarn run prod;
 service mysql stop;
 
 

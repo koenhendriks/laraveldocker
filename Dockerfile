@@ -38,12 +38,20 @@ RUN apt-get install -y \
 	php7.2-xml \
 	php7.2-bcmath \
 	php7.2-curl \
+	gnupg \
 	git  && \
 	mkdir /run/php
 
 # Install Composer
 RUN curl --silent --show-error https://getcomposer.org/installer | php && \
 	mv composer.phar /usr/local/bin/composer
+
+# Install NodeJS & Yarn
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+	echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+	curl -sL https://deb.nodesource.com/setup_11.x | bash - && \
+	apt-get install -y nodejs yarn
+
 
 # Install MySQL, update bind-address
 RUN apt-get install mysql-server -y && \
